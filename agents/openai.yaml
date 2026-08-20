@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSH Cluster Ops"
+  short_description: "Safe SSH audits, patches, sync, and tmux operations"
+  default_prompt: "Use $codex-ssh-cluster-ops to audit my configured cluster hosts and make the requested change safely."

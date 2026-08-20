@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "settings": {
+    "connect_timeout_seconds": 10,
+    "command_timeout_seconds": 120,
+    "control_persist_seconds": 0,
+    "control_path": "~/.cache/codex-ssh-cluster-ops/cm-%C",
+    "max_patch_bytes": 1048576,
+    "max_command_bytes": 262144,
+    "parallelism": 8,
+    "audit_log": "~/.local/state/codex-ssh-cluster-ops/audit.jsonl",
+    "known_hosts_file": "~/.ssh/known_hosts"
+  },
+  "hosts": {
+    "gpu-a": {
+      "expected_user": "cluster-user",
+      "expected_hostname": "10.0.0.10",
+      "expected_port": 22,
+      "expected_remote_hostname": "gpu-a",
+      "worktree_roots": [
+        "/mnt/shared/code"
+      ],
+      "run_roots": [
+        "/mnt/shared/experiments"
+      ],
+      "allow_patch": false,
+      "allow_sessions": false
+    }
+  }
+}
