@@ -4,11 +4,11 @@ description: Operate explicitly configured shared SSH hosts for bounded GPU, Git
 license: Apache-2.0
 metadata:
   author: xin1u
-  version: "0.2.0"
+  version: "0.3.0"
   compatibility: Python 3.9+, OpenSSH, and Git locally; remote Bash, Git, realpath -e, flock, sha256sum, plus tmux for sessions.
 ---
 
-# SSH Cluster Ops
+# GridLatch
 
 Resolve `SKILL_DIR` to the directory containing this `SKILL.md`, then use `python3 "$SKILL_DIR/scripts/clusterctl.py"` for every operation it covers. The implementation uses native OpenSSH and Python's standard library. Do not install an SSH MCP, Node package, agent-specific remote wrapper, or remote AI agent for this workflow.
 

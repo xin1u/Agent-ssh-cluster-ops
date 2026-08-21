@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the canonical SSH Cluster Ops skill for supported local agents."""
+"""Install the canonical GridLatch skill for supported local agents."""
 
 from __future__ import annotations
 
@@ -378,7 +378,7 @@ def install_skill(
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Install the canonical SSH Cluster Ops skill for a local coding agent."
+        description="Install GridLatch for a local coding agent."
     )
     parser.add_argument("--agent", choices=AGENTS, required=True)
     parser.add_argument("--scope", choices=SCOPES, required=True)

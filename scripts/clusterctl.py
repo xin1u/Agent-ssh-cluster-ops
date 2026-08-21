@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compatibility launcher for the canonical ssh-cluster-ops CLI."""
+"""Compatibility launcher for the canonical GridLatch CLI."""
 
 from pathlib import Path
 

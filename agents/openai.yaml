@@ -1,4 +1,4 @@
 interface:
-  display_name: "SSH Cluster Ops (Legacy Name)"
-  short_description: "Compatibility adapter for the portable SSH skill"
-  default_prompt: "Use $codex-ssh-cluster-ops and follow its canonical ssh-cluster-ops skill to perform only the requested policy-bounded operation."
+  display_name: "GridLatch (Legacy Codex Name)"
+  short_description: "Compatibility adapter for GridLatch"
+  default_prompt: "Use GridLatch via $codex-ssh-cluster-ops and follow its canonical skill to perform only the requested policy-bounded operation."

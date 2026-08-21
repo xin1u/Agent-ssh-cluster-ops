@@ -1,11 +1,13 @@
-# SSH Cluster Ops
+# GridLatch
+
+Policy-bound remote operations for coding agents.
 
 [![Tests](https://github.com/xin1u/codex-ssh-cluster-ops/actions/workflows/tests.yml/badge.svg)](https://github.com/xin1u/codex-ssh-cluster-ops/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 
-`ssh-cluster-ops` is a local-first [Agent Skills](https://agentskills.io/) package for bounded, auditable SSH operations on shared compute hosts. It works with native OpenSSH, Git, and the Python standard library; no remote AI agent, SSH MCP, Node runtime, or third-party wrapper is required.
+GridLatch is a local-first [Agent Skills](https://agentskills.io/) package for bounded, auditable SSH operations on shared compute hosts. It works with native OpenSSH, Git, and the Python standard library; no remote AI agent, SSH MCP, Node runtime, or third-party wrapper is required.
 
-The repository URL and legacy package name remain `codex-ssh-cluster-ops` for backwards compatibility. The maintained skill is `skills/ssh-cluster-ops/` and its `SKILL.md` is the single source of operating rules.
+GridLatch is distributed under the stable skill ID `ssh-cluster-ops`. The GitHub repository is currently published at the legacy slug `codex-ssh-cluster-ops`, and the old Codex skill ID remains available for backwards compatibility. The maintained skill is `skills/ssh-cluster-ops/`, whose `SKILL.md` is the single source of operating rules.
 
 It provides four narrowly scoped capabilities:
 
