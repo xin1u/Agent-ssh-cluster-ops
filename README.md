@@ -1,11 +1,9 @@
-# GridLatch
-
-Policy-bound remote operations for coding agents.
+# GridLatch: An Agent-Agnostic Framework for Safe and Auditable Remote Cluster Operations
 
 [![Tests](https://github.com/xin1u/codex-ssh-cluster-ops/actions/workflows/tests.yml/badge.svg)](https://github.com/xin1u/codex-ssh-cluster-ops/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 
-GridLatch is a local-first [Agent Skills](https://agentskills.io/) package for bounded, auditable SSH operations on shared compute hosts. It works with native OpenSSH, Git, and the Python standard library; no remote AI agent, SSH MCP, Node runtime, or third-party wrapper is required.
+GridLatch gives coding agents a portable, policy-bound control plane for auditable SSH operations on shared compute clusters. It works with native OpenSSH, Git, and the Python standard library; no remote AI agent, SSH MCP, Node runtime, or third-party wrapper is required.
 
 GridLatch is distributed under the stable skill ID `ssh-cluster-ops`. The GitHub repository is currently published at the legacy slug `codex-ssh-cluster-ops`, and the old Codex skill ID remains available for backwards compatibility. The maintained skill is `skills/ssh-cluster-ops/`, whose `SKILL.md` is the single source of operating rules.
 

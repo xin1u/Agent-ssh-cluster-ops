@@ -1,4 +1,4 @@
 interface:
   display_name: "GridLatch"
-  short_description: "Policy-bound SSH for coding agents"
+  short_description: "Agent-agnostic, auditable cluster operations"
   default_prompt: "Use GridLatch via $ssh-cluster-ops to audit my configured cluster hosts and perform only the requested policy-bounded operation."
