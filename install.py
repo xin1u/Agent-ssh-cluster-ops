@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the canonical GridLatch skill for supported local agents."""
+"""Install the canonical GridLatch skills for supported local agents."""
 
 from __future__ import annotations
 
@@ -16,8 +16,9 @@ from dataclasses import dataclass
 from typing import Mapping, Optional, Sequence, Tuple
 
 
-SKILL_NAME = "ssh-cluster-ops"
-SOURCE_DIR = Path(__file__).resolve().parent / "skills" / SKILL_NAME
+SKILLS = ("ssh-cluster-ops", "web-terminal-remote-dev")
+DEFAULT_SKILL = "ssh-cluster-ops"
+SKILLS_DIR = Path(__file__).resolve().parent / "skills"
 AGENTS = ("agents", "codex", "claude", "cursor", "opencode")
 SCOPES = ("user", "project")
 MODES = ("copy", "symlink")
@@ -62,6 +63,7 @@ class InstallPlan:
     source: Path
     target: Path
     replacing: bool
+    skill: str = DEFAULT_SKILL
 
 
 def _read_skill_name(skill_file: Path) -> str:
@@ -115,7 +117,7 @@ def _require_real_directory_chain(path: Path, *, create: bool) -> None:
             raise InstallError(f"install parent component is not a directory: {current}")
 
 
-def _require_source(source_value: Path) -> Path:
+def _require_source(source_value: Path, skill: str) -> Path:
     candidate = Path(source_value).expanduser()
     if candidate.is_symlink():
         raise InstallError(f"canonical source must be a real directory: {candidate}")
@@ -128,8 +130,8 @@ def _require_source(source_value: Path) -> Path:
     skill_file = source / "SKILL.md"
     if not skill_file.is_file() or skill_file.is_symlink():
         raise InstallError(f"canonical source is missing a regular SKILL.md: {source}")
-    if _read_skill_name(skill_file) != SKILL_NAME:
-        raise InstallError(f"canonical SKILL.md name must be {SKILL_NAME}: {skill_file}")
+    if _read_skill_name(skill_file) != skill:
+        raise InstallError(f"canonical SKILL.md name must be {skill}: {skill_file}")
     return source
 
 
@@ -144,8 +146,8 @@ def _project_root(project_dir: Optional[str], source: Path) -> Path:
     if not project.is_dir():
         raise InstallError(f"--project-dir is not a directory: {project}")
 
-    # The canonical layout is <repository>/skills/ssh-cluster-ops.  Installing
-    # into the repository would make a copied skill recursively contain itself.
+    # The canonical layout is <repository>/skills/<skill>.  Installing into the
+    # repository would make a copied skill recursively contain itself.
     repository = source.parent.parent
     if _is_within(project, repository):
         raise InstallError("--project-dir must be outside the source repository")
@@ -160,16 +162,19 @@ def resolve_install_target(
     home: Optional[Path] = None,
     source: Optional[Path] = None,
     environment: Optional[Mapping[str, str]] = None,
+    skill: str = DEFAULT_SKILL,
 ) -> Tuple[Path, Path]:
     """Return validated canonical source and exact target for one install."""
     if agent not in AGENTS:
         raise InstallError(f"unsupported agent: {agent}")
     if scope not in SCOPES:
         raise InstallError(f"unsupported scope: {scope}")
+    if skill not in SKILLS:
+        raise InstallError(f"unsupported skill: {skill}")
     if scope == "user" and project_dir is not None:
         raise InstallError("--project-dir is only valid when --scope project")
 
-    source_dir = _require_source(SOURCE_DIR if source is None else source)
+    source_dir = _require_source(SKILLS_DIR / skill if source is None else source, skill)
     if scope == "user":
         environment = os.environ if environment is None else environment
         base = Path.home() if home is None else Path(home).expanduser()
@@ -192,7 +197,7 @@ def resolve_install_target(
     else:
         base = _project_root(project_dir, source_dir)
         parts = INSTALL_ROOTS[agent][scope]
-    target = base.joinpath(*parts, SKILL_NAME)
+    target = base.joinpath(*parts, skill)
     _require_real_directory_chain(target.parent, create=False)
 
     # Do not permit a custom HOME or project path to turn installation into a
@@ -213,13 +218,13 @@ def _target_identity(path: Path) -> Tuple[int, int, int]:
     return details.st_dev, details.st_ino, stat.S_IFMT(details.st_mode)
 
 
-def _validate_replace_target(path: Path, identity: Tuple[int, int, int]) -> None:
+def _validate_replace_target(path: Path, identity: Tuple[int, int, int], skill: str) -> None:
     if stat.S_ISLNK(identity[2]):
         return
     if not stat.S_ISDIR(identity[2]):
         raise InstallError(f"refusing to replace a non-directory target: {path}")
-    if _read_skill_name(path / "SKILL.md") != SKILL_NAME:
-        raise InstallError(f"refusing to replace a directory that is not {SKILL_NAME}: {path}")
+    if _read_skill_name(path / "SKILL.md") != skill:
+        raise InstallError(f"refusing to replace a directory that is not {skill}: {path}")
 
 
 def _remove_exact_target(path: Path) -> None:
@@ -231,8 +236,8 @@ def _remove_exact_target(path: Path) -> None:
         raise InstallError(f"refusing to replace a non-directory target: {path}")
 
 
-def _stage_install(source: Path, parent: Path, mode: str) -> Path:
-    staging = Path(tempfile.mkdtemp(prefix=f".{SKILL_NAME}.install-", dir=str(parent)))
+def _stage_install(source: Path, parent: Path, mode: str, skill: str = DEFAULT_SKILL) -> Path:
+    staging = Path(tempfile.mkdtemp(prefix=f".{skill}.install-", dir=str(parent)))
     staging.rmdir()
     try:
         if mode == "copy":
@@ -294,11 +299,12 @@ def _install_staged(
     staging: Path,
     target: Path,
     expected_identity: Optional[Tuple[int, int, int]],
+    skill: str = DEFAULT_SKILL,
 ) -> None:
     backup: Optional[Path] = None
     try:
         if expected_identity is not None:
-            backup = target.parent / (f".{SKILL_NAME}.backup-{uuid.uuid4().hex}")
+            backup = target.parent / (f".{skill}.backup-{uuid.uuid4().hex}")
             os.replace(str(target), str(backup))
             if _target_identity(backup) != expected_identity:
                 try:
@@ -341,6 +347,7 @@ def install_skill(
     home: Optional[Path] = None,
     source: Optional[Path] = None,
     environment: Optional[Mapping[str, str]] = None,
+    skill: str = DEFAULT_SKILL,
 ) -> InstallPlan:
     """Install one exact target skill directory without touching any cluster."""
     if mode not in MODES:
@@ -352,23 +359,24 @@ def install_skill(
         home=home,
         source=source,
         environment=environment,
+        skill=skill,
     )
     exists = _target_exists(target)
     expected_identity = _target_identity(target) if exists else None
     if exists and not replace:
         raise InstallError(f"target already exists; rerun with --replace: {target}")
     if expected_identity is not None and replace:
-        _validate_replace_target(target, expected_identity)
+        _validate_replace_target(target, expected_identity, skill)
 
-    plan = InstallPlan(agent, scope, mode, source_dir, target, exists and replace)
+    plan = InstallPlan(agent, scope, mode, source_dir, target, exists and replace, skill)
     if dry_run:
         return plan
 
     _require_real_directory_chain(target.parent, create=True)
-    staging = _stage_install(source_dir, target.parent, mode)
+    staging = _stage_install(source_dir, target.parent, mode, skill)
     try:
         _require_real_directory_chain(target.parent, create=False)
-        _install_staged(staging, target, expected_identity if plan.replacing else None)
+        _install_staged(staging, target, expected_identity if plan.replacing else None, skill)
     except Exception as exc:
         if isinstance(exc, InstallError):
             raise
@@ -378,10 +386,11 @@ def install_skill(
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Install GridLatch for a local coding agent."
+        description="Install a GridLatch skill for a local coding agent."
     )
     parser.add_argument("--agent", choices=AGENTS, required=True)
     parser.add_argument("--scope", choices=SCOPES, required=True)
+    parser.add_argument("--skill", choices=SKILLS, default=DEFAULT_SKILL)
     parser.add_argument("--project-dir")
     parser.add_argument("--mode", choices=MODES, default="copy")
     parser.add_argument("--dry-run", action="store_true")
@@ -397,6 +406,7 @@ def _format_plan(plan: InstallPlan, dry_run: bool) -> str:
     return "\n".join(
         (
             f"{prefix}{action}: {plan.target}",
+            f"skill: {plan.skill}",
             f"agent: {plan.agent}",
             f"scope: {plan.scope}",
             f"mode: {plan.mode}",
@@ -415,6 +425,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             mode=args.mode,
             dry_run=args.dry_run,
             replace=args.replace,
+            skill=args.skill,
         )
     except InstallError as exc:
         print(f"error: {exc}", file=sys.stderr)

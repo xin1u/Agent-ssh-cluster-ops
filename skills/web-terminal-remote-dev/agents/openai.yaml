@@ -1,0 +1,4 @@
+interface:
+  display_name: "GridLatch Web Terminal"
+  short_description: "Browser-terminal remote dev when SSH is unavailable"
+  default_prompt: "Use GridLatch's $web-terminal-remote-dev only if SSH cannot reach the host, to run the requested command or transfer the requested file through the web IDE terminal I am already signed into."
