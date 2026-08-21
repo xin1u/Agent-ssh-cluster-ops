@@ -351,7 +351,7 @@ class SessionAndAuditTests(unittest.TestCase):
         stop = clusterctl._session_simple_script("stop").decode()
         self.assertIn('tmux has-session -t "=$name"', start)
         self.assertIn('tmux set-option -w -t "=$name:0" remain-on-exit on', start)
-        self.assertIn("@codex_expected_tree", start)
+        self.assertIn("@sshops_expected_tree", start)
         self.assertIn("actual_tree", start)
         self.assertIn("160000", start)
         self.assertIn("cleanup_start_failure", start)

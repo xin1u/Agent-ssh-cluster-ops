@@ -305,6 +305,11 @@ print(os.path.realpath(arguments[0]))
             "command": "bash",
         }
         state_path.write_text(json.dumps(state))
+        legacy_status = self.run_cli(
+            "session-status", "--host", "gpu-a", "--name", "debug-r1-old"
+        )
+        self.assertIn("state=present", legacy_status)
+        self.assertIn(f"run_dir={self.run_root}", legacy_status)
         self.run_cli(
             "session-stop",
             "--host",

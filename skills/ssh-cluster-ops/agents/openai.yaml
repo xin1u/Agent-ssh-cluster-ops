@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSH Cluster Ops"
+  short_description: "Bounded SSH audits, reviewed diffs, and tmux sessions"
+  default_prompt: "Use $ssh-cluster-ops to audit my configured cluster hosts and perform only the requested policy-bounded operation."

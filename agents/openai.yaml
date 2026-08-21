@@ -1,4 +1,4 @@
 interface:
-  display_name: "SSH Cluster Ops"
-  short_description: "Safe SSH audits, patches, sync, and tmux operations"
-  default_prompt: "Use $codex-ssh-cluster-ops to audit my configured cluster hosts and make the requested change safely."
+  display_name: "SSH Cluster Ops (Legacy Name)"
+  short_description: "Compatibility adapter for the portable SSH skill"
+  default_prompt: "Use $codex-ssh-cluster-ops and follow its canonical ssh-cluster-ops skill to perform only the requested policy-bounded operation."
